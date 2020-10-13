@@ -425,7 +425,7 @@ price-time series, we have reason to believe that there is a relyable
 economic link betwen these two assets.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{1}{\boxspacing}
+\prompt{In}{incolor}{8}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
 \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
@@ -435,6 +435,8 @@ economic link betwen these two assets.
 \PY{k+kn}{import} \PY{n+nn}{statsmodels}
 \PY{k+kn}{import} \PY{n+nn}{statsmodels}\PY{n+nn}{.}\PY{n+nn}{api} \PY{k}{as} \PY{n+nn}{sm}
 \PY{k+kn}{from} \PY{n+nn}{statsmodels}\PY{n+nn}{.}\PY{n+nn}{tsa}\PY{n+nn}{.}\PY{n+nn}{stattools} \PY{k+kn}{import} \PY{n}{coint}
+\PY{k+kn}{import} \PY{n+nn}{datetime}
+\PY{k+kn}{from} \PY{n+nn}{datetime} \PY{k+kn}{import} \PY{n}{timedelta}
 \end{Verbatim}
 \end{tcolorbox}
 
@@ -456,7 +458,7 @@ Inc.~(OAS), Callon Petroleum Company (CPE), Abraxas Petroleum
 Corporation (AXAS), Marathon Petroleum Corporation (MPC).
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{46}{\boxspacing}
+\prompt{In}{incolor}{9}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{c+c1}{\PYZsh{} Lets start by finding stock with cointegrated proces}
 
@@ -473,7 +475,7 @@ Corporation (AXAS), Marathon Petroleum Corporation (MPC).
     \end{Verbatim}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{46}{\boxspacing}
+\prompt{Out}{outcolor}{9}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
             AXAS         CPE        MPC    OAS        OXY
 Date
@@ -486,7 +488,7 @@ Date
 \end{tcolorbox}
         
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{51}{\boxspacing}
+\prompt{In}{incolor}{10}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{k}{def} \PY{n+nf}{test\PYZus{}cointegration}\PY{p}{(}\PY{n}{financial\PYZus{}information}\PY{p}{)}\PY{p}{:}
     \PY{n}{number\PYZus{}of\PYZus{}assets} \PY{o}{=} \PY{n}{financial\PYZus{}information}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
@@ -513,7 +515,7 @@ Date
 \end{tcolorbox}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{51}{\boxspacing}
+\prompt{Out}{outcolor}{10}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 <AxesSubplot:>
 \end{Verbatim}
@@ -558,7 +560,7 @@ observed value is considerably higher than the mean, it will have to
 fall in order to revert to the average.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{79}{\boxspacing}
+\prompt{In}{incolor}{11}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{normalization} \PY{o}{=} \PY{n}{financial\PYZus{}information}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{AXAS}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{financial\PYZus{}information}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MPC}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} 
 
@@ -579,7 +581,7 @@ fall in order to revert to the average.
 \end{tcolorbox}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{79}{\boxspacing}
+\prompt{Out}{outcolor}{11}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 <AxesSubplot:xlabel='Date'>
 \end{Verbatim}
@@ -590,6 +592,123 @@ fall in order to revert to the average.
     \end{center}
     { \hspace*{\fill} \\}
     
+    \hypertarget{testing}{%
+\section{Testing}\label{testing}}
+
+In order to test this trading algorith, we will select a span of about
+100 days, and will for each of these evaluate weather the stock price
+will rise, fall or remain in the gray area where we can't really predict
+much.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{21}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{testing\PYZus{}information} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{download}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{AXAS}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{start} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2019\PYZhy{}02\PYZhy{}17}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{end} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2019\PYZhy{}07\PYZhy{}14}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{testing\PYZus{}information} \PY{o}{=} \PY{n}{testing\PYZus{}information}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{testing\PYZus{}information}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+
+\PY{n}{start\PYZus{}date} \PY{o}{=} \PY{n}{datetime}\PY{o}{.}\PY{n}{date}\PY{p}{(}\PY{l+m+mi}{2019}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{17}\PY{p}{)}
+\PY{n}{end\PYZus{}date} \PY{o}{=} \PY{n}{datetime}\PY{o}{.}\PY{n}{date}\PY{p}{(}\PY{l+m+mi}{2019}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{,}\PY{l+m+mi}{14}\PY{p}{)}
+\PY{n}{delta} \PY{o}{=} \PY{n}{timedelta}\PY{p}{(}\PY{n}{days}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+
+\PY{n}{success} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{failure} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{hedge} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{previous\PYZus{}day} \PY{o}{=} \PY{n}{datetime}\PY{o}{.}\PY{n}{date}\PY{p}{(}\PY{l+m+mi}{2019}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{17}\PY{p}{)}
+
+\PY{k}{while} \PY{n}{start\PYZus{}date} \PY{o}{\PYZlt{}} \PY{n}{end\PYZus{}date}\PY{p}{:}
+    \PY{k}{try}\PY{p}{:}
+        \PY{k}{if} \PY{p}{(}\PY{p}{(}\PY{n}{testing\PYZus{}information}\PY{p}{[}\PY{n}{start\PYZus{}date}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n}{testing\PYZus{}information}\PY{p}{[}\PY{n}{previous\PYZus{}day}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{p}{(}\PY{n}{z\PYZus{}values}\PY{p}{[}\PY{n}{start\PYZus{}date}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+            \PY{n}{success} \PY{o}{=} \PY{n}{success} \PY{o}{+} \PY{l+m+mi}{1}
+        \PY{k}{if} \PY{p}{(}\PY{n}{testing\PYZus{}information}\PY{p}{[}\PY{n}{start\PYZus{}date}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n}{testing\PYZus{}information}\PY{p}{[}\PY{n}{previous\PYZus{}day}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{p}{(}\PY{n}{z\PYZus{}values}\PY{p}{[}\PY{n}{start\PYZus{}date}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n}{success} \PY{o}{=} \PY{n}{success} \PY{o}{+} \PY{l+m+mi}{1}
+        \PY{k}{if} \PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1} \PY{o}{\PYZlt{}} \PY{n}{z\PYZus{}values}\PY{p}{[}\PY{n}{start\PYZus{}date}\PY{o}{.}\PY{n}{strftime}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{Y\PYZhy{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{m\PYZhy{}}\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n}{hedge} \PY{o}{=} \PY{n}{hedge} \PY{o}{+} \PY{l+m+mi}{1}
+    \PY{k}{except} \PY{n+ne}{KeyError}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Nein}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        
+    \PY{n}{previous\PYZus{}day} \PY{o}{=} \PY{n}{start\PYZus{}date}
+    \PY{n}{start\PYZus{}date} \PY{o}{+}\PY{o}{=} \PY{n}{delta}
+    \PY{n}{failure} \PY{o}{=} \PY{n}{testing\PYZus{}information}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{success} \PY{o}{\PYZhy{}} \PY{n}{cant\PYZus{}determine}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Success = }\PY{l+s+si}{\PYZob{}}\PY{n}{success}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{, Not far from the mean = }\PY{l+s+si}{\PYZob{}}\PY{n}{hedge}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{, failure = }\PY{l+s+si}{\PYZob{}}\PY{n}{failure}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}} \PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[*********************100\%***********************]  1 of 1 completed
+(101,)
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Nein
+Success = 34, Not far from the mean = 33, failure = 34
+    \end{Verbatim}
+
     \hypertarget{limitation}{%
 \section{Limitation}\label{limitation}}
 
@@ -601,6 +720,17 @@ in orther to do this we would need to incorporate machine learning
 elemts to this algorithm. For the moment, we can conclude that
 pair-trading is a very useful way of predicting short-term rises and
 falls.
+
+Furthermore, while testing we have come to the conclusion that in this
+particular case, it is a rather uneffective trading method, this is
+probably because of the cointegration test, since the acceptance
+criteria is slightly loose, but in the current world-wide circumstances,
+it has been monstly impossible to find a more closely cointegrated pair.
+Additionaly, the chosen stock remain rather close to the mean trough the
+selected time period, making many of the dates not complete succeses
+because peirs trading relays on this mean-reverting behaviour to
+predict, which means that a considerable amount of the results are
+correct, but not useful.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
 \prompt{In}{incolor}{ }{\boxspacing}
