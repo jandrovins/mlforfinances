@@ -20,7 +20,7 @@ def evaluation(individual):
     for i in range(len(trends_data)-1):
         individual_arr = np.array(individual)
         trend = trends_data[i,1:].dot(individual_arr)
-        if trend > 0:
+        if trend > 3:
             if trends_data[i+1, 0] > trends_data[i, 0]: 
                 fitness +=1 
         elif trend <= 0:
@@ -52,7 +52,7 @@ toolbox.register("map", futures.map)
 
 def main(checkpoint=None):
     pkl = "GA4.pkl"
-    n = 10
+    n = 256
     if checkpoint:
         # A file name has been given, then load the data from the file
         with open(checkpoint, "rb") as cp_file:
