@@ -12,8 +12,15 @@ from deap import tools
 from scoop import futures
 import pickle
 
-stock = "NSEI"
-trends_data = np.loadtxt(f"{stock}trends2.csv",delimiter=',', skiprows=1) 
+import sys
+
+# CXPB  is the probability with which two individuals
+#       are crossed
+#
+# MUTPB is the probability for mutating an individual
+CXPB, MUTPB, stock_file = sys.argv[1:3]
+
+trends_data = np.loadtxt(stock_file,delimiter=',', skiprows=1) 
 
 def evaluation(individual):
     fitness = 0 
@@ -51,7 +58,7 @@ toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("map", futures.map)
 
 def main(checkpoint=None):
-    pkl = "GA4.pkl"
+    pkl = "GA4_AAPLtraining2.pkl"
     n = 256
     if checkpoint:
         # A file name has been given, then load the data from the file
@@ -73,11 +80,6 @@ def main(checkpoint=None):
     fitnesses = list(toolbox.map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
-    # CXPB  is the probability with which two individuals
-    #       are crossed
-    #
-    # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.1
     # Extracting all the fitnesses of the population
     fits = [ind.fitness.values[0] for ind in pop]
     # Variable keeping track of the number of generations
