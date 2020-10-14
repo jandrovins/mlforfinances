@@ -370,8 +370,8 @@
     
 
     
-    \hypertarget{implementaciuxf3n-red-neural}{%
-\section{Implementación Red Neural}\label{implementaciuxf3n-red-neural}}
+    \hypertarget{neural-network}{%
+\section{Neural Network}\label{neural-network}}
 
 Tutorial:
 https://medium.com/@randerson112358/stock-price-prediction-using-python-machine-learning-e82a039ac2bb
@@ -380,7 +380,7 @@ For this particular example we will use a machine learning technique
 known as Long Short-Term Memory or LSTM for short.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{4}{\boxspacing}
+\prompt{In}{incolor}{27}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{k+kn}{import} \PY{n+nn}{math}
 \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
@@ -391,6 +391,8 @@ known as Long Short-Term Memory or LSTM for short.
 \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
 \PY{n}{plt}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{use}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fivethirtyeight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \PY{k+kn}{import} \PY{n+nn}{yfinance} \PY{k}{as} \PY{n+nn}{yf}
+\PY{k+kn}{import} \PY{n+nn}{datetime}
+\PY{k+kn}{from} \PY{n+nn}{datetime} \PY{k+kn}{import} \PY{n}{timedelta}
 \end{Verbatim}
 \end{tcolorbox}
 
@@ -404,7 +406,7 @@ train out newral network with about 80\% of our available data, so we
 will calculate how many registers this is.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{74}{\boxspacing}
+\prompt{In}{incolor}{8}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{apple\PYZus{}stock\PYZus{}information} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{download}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{AAPL}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{start} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2012\PYZhy{}01\PYZhy{}01}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{end} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2020\PYZhy{}8\PYZhy{}11}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} Fetching apple information}
 \PY{n}{apple\PYZus{}stock\PYZus{}information}
@@ -416,7 +418,7 @@ will calculate how many registers this is.
     \end{Verbatim}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{74}{\boxspacing}
+\prompt{Out}{outcolor}{8}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
                   Open        High         Low       Close   Adj Close  \textbackslash{}
 Date
@@ -451,7 +453,7 @@ Date
 \end{tcolorbox}
         
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{75}{\boxspacing}
+\prompt{In}{incolor}{9}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{apple\PYZus{}close\PYZus{}price} \PY{o}{=} \PY{n}{apple\PYZus{}stock\PYZus{}information}\PY{o}{.}\PY{n}{filter}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)} \PY{c+c1}{\PYZsh{} Droppping everything that isn\PYZsq{}t close price}
 \PY{n}{apple\PYZus{}close\PYZus{}price}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{title} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Historic close price for Apple Inc.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,} \PY{n}{xlabel} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close Price USD (\PYZdl{})}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} Graphing}
@@ -459,7 +461,7 @@ Date
 \end{tcolorbox}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{75}{\boxspacing}
+\prompt{Out}{outcolor}{9}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 <AxesSubplot:title=\{'center':'Historic close price for Apple Inc.'\},
 xlabel='Date', ylabel='Close Price USD (\$)'>
@@ -472,7 +474,7 @@ xlabel='Date', ylabel='Close Price USD (\$)'>
     { \hspace*{\fill} \\}
     
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{76}{\boxspacing}
+\prompt{In}{incolor}{26}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{training\PYZus{}data\PYZus{}len} \PY{o}{=} \PY{n}{math}\PY{o}{.}\PY{n}{ceil}\PY{p}{(} \PY{n}{apple\PYZus{}close\PYZus{}price}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*}\PY{o}{.}\PY{l+m+mi}{8}\PY{p}{)} \PY{c+c1}{\PYZsh{} Calculates number of training registers}
 \PY{n}{training\PYZus{}data\PYZus{}len}
@@ -480,7 +482,7 @@ xlabel='Date', ylabel='Close Price USD (\$)'>
 \end{tcolorbox}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{76}{\boxspacing}
+\prompt{Out}{outcolor}{26}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 1732
 \end{Verbatim}
@@ -505,7 +507,7 @@ therefore we will transform this \emph{pandas} dataset into a
 \emph{numpy} array, in which theses operations can be done faster.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{77}{\boxspacing}
+\prompt{In}{incolor}{11}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{array\PYZus{}of\PYZus{}closing\PYZus{}values} \PY{o}{=} \PY{n}{apple\PYZus{}close\PYZus{}price}\PY{o}{.}\PY{n}{values} \PY{c+c1}{\PYZsh{} Transfor the dataframe into an array}
 
@@ -517,7 +519,7 @@ therefore we will transform this \emph{pandas} dataset into a
 \end{tcolorbox}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{77}{\boxspacing}
+\prompt{Out}{outcolor}{11}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 array([[0.00739618],
        [0.00818583],
@@ -540,7 +542,7 @@ store the closing price information for the day after the ones stored in
 the \(x train\) position with the same index.
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{78}{\boxspacing}
+\prompt{In}{incolor}{12}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{train\PYZus{}data} \PY{o}{=} \PY{n}{scaled\PYZus{}close\PYZus{}prices}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{training\PYZus{}data\PYZus{}len} \PY{p}{,} \PY{p}{:} \PY{p}{]} \PY{c+c1}{\PYZsh{} Selects from the scaled prices the number of rows defined as training\PYZus{}data\PYZus{}len}
 \PY{n+nb}{print}\PY{p}{(}\PY{n}{train\PYZus{}data}\PY{p}{)}
@@ -572,7 +574,7 @@ the \(x train\) position with the same index.
 \section{Building the Model}\label{building-the-model}}
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{79}{\boxspacing}
+\prompt{In}{incolor}{16}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{c+c1}{\PYZsh{}Build the LSTM network model}
 \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
@@ -588,18 +590,18 @@ the \(x train\) position with the same index.
 \end{tcolorbox}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-1672/1672 [==============================] - 57s 34ms/step - loss: 4.0742e-04
+1672/1672 [==============================] - 61s 36ms/step - loss: 2.8564e-04
     \end{Verbatim}
 
             \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{79}{\boxspacing}
+\prompt{Out}{outcolor}{16}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
-<tensorflow.python.keras.callbacks.History at 0x7fa8e54d4850>
+<tensorflow.python.keras.callbacks.History at 0x7f02e8a89c40>
 \end{Verbatim}
 \end{tcolorbox}
         
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{83}{\boxspacing}
+\prompt{In}{incolor}{17}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{test\PYZus{}data} \PY{o}{=} \PY{n}{scaled\PYZus{}close\PYZus{}prices}\PY{p}{[}\PY{n}{training\PYZus{}data\PYZus{}len} \PY{o}{\PYZhy{}} \PY{l+m+mi}{60}\PY{p}{:} \PY{p}{,} \PY{p}{:} \PY{p}{]} \PY{c+c1}{\PYZsh{} We declare the test data to be the last 20\PYZpc{} of out total information}
 
@@ -615,7 +617,7 @@ the \(x train\) position with the same index.
 \end{tcolorbox}
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{84}{\boxspacing}
+\prompt{In}{incolor}{18}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{n}{predictions} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{x\PYZus{}test}\PY{p}{)} 
 \PY{n}{predictions} \PY{o}{=} \PY{n}{scaler}\PY{o}{.}\PY{n}{inverse\PYZus{}transform}\PY{p}{(}\PY{n}{predictions}\PY{p}{)} \PY{c+c1}{\PYZsh{} Undo scaling}
@@ -623,7 +625,7 @@ the \(x train\) position with the same index.
 \end{tcolorbox}
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{85}{\boxspacing}
+\prompt{In}{incolor}{20}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{c+c1}{\PYZsh{}Plot/Create the data for the graph}
 \PY{n}{train} \PY{o}{=} \PY{n}{apple\PYZus{}close\PYZus{}price}\PY{p}{[}\PY{p}{:}\PY{n}{training\PYZus{}data\PYZus{}len}\PY{p}{]}
@@ -643,7 +645,7 @@ the \(x train\) position with the same index.
 \end{tcolorbox}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-<ipython-input-85-578636ed339f>:4: SettingWithCopyWarning:
+<ipython-input-20-578636ed339f>:4: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row\_indexer,col\_indexer] = value instead
 
@@ -658,18 +660,58 @@ docs/stable/user\_guide/indexing.html\#returning-a-view-versus-a-copy
     { \hspace*{\fill} \\}
     
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
+\prompt{In}{incolor}{145}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
-
+\PY{n}{pd}\PY{o}{.}\PY{n}{set\PYZus{}option}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{display.max\PYZus{}rows}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{10}\PY{p}{)}
+\PY{n}{valid}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Predictions}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
 \end{Verbatim}
 \end{tcolorbox}
 
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{145}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                 Close  Predictions
+Date
+2018-11-19   46.465000    49.083511
+2018-11-20   44.244999    48.586243
+2018-11-21   44.195000    47.834946
+2018-11-23   43.072498    47.058662
+2018-11-26   43.654999    46.223766
+{\ldots}                {\ldots}          {\ldots}
+2020-08-04  109.665001    96.563187
+2020-08-05  110.062500    98.865654
+2020-08-06  113.902496   100.903107
+2020-08-07  111.112503   103.014832
+2020-08-10  112.727501   104.447594
+
+[433 rows x 2 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
+\prompt{In}{incolor}{146}{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{array\PYZus{}of\PYZus{}predictions} \PY{o}{=} \PY{n}{valid}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Predictions}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{values}
+\PY{n}{array\PYZus{}of\PYZus{}real\PYZus{}prices} \PY{o}{=} \PY{n}{valid}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{values}
 
+\PY{n}{success} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range} \PY{p}{(}\PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{p}{(}\PY{p}{(}\PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{p}{[}\PY{n}{i} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{p}{(}\PY{n}{array\PYZus{}of\PYZus{}real\PYZus{}prices}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n}{array\PYZus{}of\PYZus{}real\PYZus{}prices}\PY{p}{[}\PY{n}{i} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{success} \PY{o}{=} \PY{n}{success} \PY{o}{+} \PY{l+m+mi}{1}
+    \PY{k}{elif} \PY{p}{(}\PY{p}{(}\PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{p}{[}\PY{n}{i} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{p}{(}\PY{n}{array\PYZus{}of\PYZus{}real\PYZus{}prices}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{array\PYZus{}of\PYZus{}real\PYZus{}prices}\PY{p}{[}\PY{n}{i} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{success} \PY{o}{=} \PY{n}{success} \PY{o}{+} \PY{l+m+mi}{1}
+        
+\PY{n}{failure} \PY{o}{=} \PY{n}{array\PYZus{}of\PYZus{}predictions}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{success}
+
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Success = }\PY{l+s+si}{\PYZob{}}\PY{n}{success}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{, Failure = }\PY{l+s+si}{\PYZob{}}\PY{n}{failure}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \end{Verbatim}
 \end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Success = 234, Failure = 199
+    \end{Verbatim}
 
 
     % Add a bibliography block to the postdoc
