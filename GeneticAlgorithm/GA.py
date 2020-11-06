@@ -12,27 +12,26 @@ from deap import tools
 from scoop import futures
 import pickle
 
-from sys import argv, exit
+from sys import argv, exit, stderr
 
+if len(argv) != 9:
+    print("ERROR: GA.py receives 8 arguments: CXPB MUTPB n stock_name MAXGENERATIONS lwlimit rwlimit pkl. Exiting...", file=stderr)
+    exit()
+
+CXPB, MUTPB, n, stock_name, MAXGENERATIONS, lwlimit, rwlimit, pkl = argv[1:9]
 # CXPB  is the probability with which two individuals
 #       are crossed
 #
 # MUTPB is the probability for mutating an individual
-if len(argv)) < 5:
-    print("ERROR: GA.py receives 5 arguments: CXPB MUTPB n stock_name Exiting...")
-    exit()
-
-CXPB, MUTPB, n, stock_name = argv[1:5]
-n=int(n)
 CXPB, MUTPB = float(CXPB), float(MUTPB)
+n=int(n) # n is the number of individuals
 stock_name = stock_name.strip("/")
-stock_file = f"datasets/{stock_name}/{stock_name}training.csv"
+MAXGENERATIONS = int(MAXGENERATIONS)
+lwlimit = int(lwlimit) # left weight limit
+rwlimit = int(rwlimit) # right weight limit
 from pathlib import Path
-out_dir = Path(stock_name)
-out_dir.mkdir(exist_ok=True)
-pkl = f"{stock_name}/{stock_name}_CXPB{CXPB}_MUTPB{MUTPB}_n{n}.pkl"
-print(f"CXPB:{CXPB} MUTPB:{MUTPB} stock_file:{stock_name} pkl:{pkl}")
-
+out_dir = Path(pkl).parent
+stock_file = str(out_dir / f"{stock_name}training.csv")
 
 trends_data = np.loadtxt(stock_file,delimiter=',', skiprows=1) 
 
@@ -57,7 +56,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 # Attribute generator 
-toolbox.register("weights", random.randint, 1, 3)
+toolbox.register("weights", random.randint, lwlimit, rwlimit)
 # Structure initializers
 toolbox.register("individual", tools.initRepeat, creator.Individual, 
     toolbox.weights, 9)
@@ -65,7 +64,7 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 # Evaluation function
 toolbox.register("evaluate", evaluation)
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutUniformInt, indpb=0.05, low=1, up=3)
+toolbox.register("mutate", tools.mutUniformInt, indpb=0.05, low=lwlimit, up=rwlimit)
 toolbox.register("select", tools.selTournament, tournsize=10)
 
 # Parallel map
@@ -105,7 +104,7 @@ def main(checkpoint=None):
 
 
     # Begin the evolution
-    while gen <= 2000:
+    while gen <= MAXGENERATIONS:
         # A new generation
         gen = gen + 1
         # Select the next generation individuals
