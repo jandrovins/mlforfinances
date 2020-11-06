@@ -12,10 +12,20 @@ from deap import tools
 from scoop import futures
 import pickle
 
-import sys
+from sys import argv, exit
+if len(argv) < 2:
+    print("ERROR: Argument 'stock' not given. Exiting...")
+    exit()
 
-stock = "AAPL"
-trends_data = np.loadtxt(f"{stock}training2.csv",delimiter=',', skiprows=1) 
+pkl = argv[1]
+# pkl_cp = pkl.split("/")[-1].split("_")
+# stock_name = pkl_cp[0]
+# CXPB = pkl_cp[1].split("CXPB")[-1]
+# MUTPB = pkl_cp[2].split("MUTPB")[-1]
+# n = pkl_cp[3].split("n")[-1].split('.')[0]
+
+stock_file = argv[2]
+trends_data = np.loadtxt(f"{stock_file}",delimiter=',', skiprows=1) 
 
 def evaluation(individual):
     fitness = 0 
@@ -26,12 +36,13 @@ def evaluation(individual):
             if trends_data[i+1, 0] > trends_data[i, 0]: 
                 fitness +=1 
         elif trend <= 0:
-            if trends_data[i+1, 0] < trends_data[i, 0]:
-                fitness +=1
+            if trends_data[i+1, 0] < trends_data[i, 0]: 
+                fitness +=1 
         else:
-            if abs(trends_data[i+1, 0] == trends_data[i, 0]) < 1e-2:
-                fitness +=1
+            if abs(trends_data[i+1, 0] == trends_data[i, 0]) < 1e-5:
+                fitness +=1 
     return fitness,
+
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -51,8 +62,6 @@ toolbox.register("select", tools.selTournament, tournsize=10)
 
 # Parallel map
 toolbox.register("map", futures.map)
-pkl = sys.argv[1]
-n = 256
 with open(pkl, "rb") as cp_file:
     cp = pickle.load(cp_file)
 pop = cp["pop"]
@@ -60,4 +69,6 @@ start_gen = cp["generation"]
 halloffame = cp["halloffame"]
 logbook = cp["logbook"]
 random.setstate(cp["rndstate"])
-print(halloffame[0])
+
+fitness = evaluation(halloffame[0])
+print(f"Weights:{halloffame[0]} - FITNESS:{fitness}")

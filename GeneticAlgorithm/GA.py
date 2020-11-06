@@ -12,13 +12,27 @@ from deap import tools
 from scoop import futures
 import pickle
 
-import sys
+from sys import argv, exit
 
 # CXPB  is the probability with which two individuals
 #       are crossed
 #
 # MUTPB is the probability for mutating an individual
-CXPB, MUTPB, stock_file = sys.argv[1:3]
+if len(argv)) < 5:
+    print("ERROR: GA.py receives 5 arguments: CXPB MUTPB n stock_name Exiting...")
+    exit()
+
+CXPB, MUTPB, n, stock_name = argv[1:5]
+n=int(n)
+CXPB, MUTPB = float(CXPB), float(MUTPB)
+stock_name = stock_name.strip("/")
+stock_file = f"datasets/{stock_name}/{stock_name}training.csv"
+from pathlib import Path
+out_dir = Path(stock_name)
+out_dir.mkdir(exist_ok=True)
+pkl = f"{stock_name}/{stock_name}_CXPB{CXPB}_MUTPB{MUTPB}_n{n}.pkl"
+print(f"CXPB:{CXPB} MUTPB:{MUTPB} stock_file:{stock_name} pkl:{pkl}")
+
 
 trends_data = np.loadtxt(stock_file,delimiter=',', skiprows=1) 
 
@@ -58,8 +72,6 @@ toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("map", futures.map)
 
 def main(checkpoint=None):
-    pkl = "GA4_AAPLtraining2.pkl"
-    n = 256
     if checkpoint:
         # A file name has been given, then load the data from the file
         with open(checkpoint, "rb") as cp_file:
@@ -92,7 +104,6 @@ def main(checkpoint=None):
     stats.register("std", np.std)
 
 
-    best = [0, pop[0]]
     # Begin the evolution
     while gen <= 2000:
         # A new generation
