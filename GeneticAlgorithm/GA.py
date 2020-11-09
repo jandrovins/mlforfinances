@@ -12,15 +12,35 @@ from deap import tools
 from scoop import futures
 import pickle
 
-stock = "NSEI"
-trends_data = np.loadtxt(f"{stock}trends2.csv",delimiter=',', skiprows=1) 
+from sys import argv, exit, stderr
+
+if len(argv) != 9:
+    print("ERROR: GA.py receives 8 arguments: CXPB MUTPB n stock_name MAXGENERATIONS lwlimit rwlimit pkl. Exiting...", file=stderr)
+    exit()
+
+CXPB, MUTPB, n, stock_name, MAXGENERATIONS, lwlimit, rwlimit, pkl = argv[1:9]
+# CXPB  is the probability with which two individuals
+#       are crossed
+#
+# MUTPB is the probability for mutating an individual
+CXPB, MUTPB = float(CXPB), float(MUTPB)
+n=int(n) # n is the number of individuals
+stock_name = stock_name.strip("/")
+MAXGENERATIONS = int(MAXGENERATIONS)
+lwlimit = int(lwlimit) # left weight limit
+rwlimit = int(rwlimit) # right weight limit
+from pathlib import Path
+out_dir = Path(pkl).parent
+stock_file = str(out_dir / f"{stock_name}training.csv")
+
+trends_data = np.loadtxt(stock_file,delimiter=',', skiprows=1) 
 
 def evaluation(individual):
     fitness = 0 
     for i in range(len(trends_data)-1):
         individual_arr = np.array(individual)
         trend = trends_data[i,1:].dot(individual_arr)
-        if trend > 0:
+        if trend > 3:
             if trends_data[i+1, 0] > trends_data[i, 0]: 
                 fitness +=1 
         elif trend <= 0:
@@ -36,7 +56,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 # Attribute generator 
-toolbox.register("weights", random.randint, 1, 3)
+toolbox.register("weights", random.randint, lwlimit, rwlimit)
 # Structure initializers
 toolbox.register("individual", tools.initRepeat, creator.Individual, 
     toolbox.weights, 9)
@@ -44,15 +64,13 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 # Evaluation function
 toolbox.register("evaluate", evaluation)
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutUniformInt, indpb=0.05, low=1, up=3)
+toolbox.register("mutate", tools.mutUniformInt, indpb=0.05, low=lwlimit, up=rwlimit)
 toolbox.register("select", tools.selTournament, tournsize=10)
 
 # Parallel map
 toolbox.register("map", futures.map)
 
 def main(checkpoint=None):
-    pkl = "GA4.pkl"
-    n = 10
     if checkpoint:
         # A file name has been given, then load the data from the file
         with open(checkpoint, "rb") as cp_file:
@@ -73,11 +91,6 @@ def main(checkpoint=None):
     fitnesses = list(toolbox.map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
-    # CXPB  is the probability with which two individuals
-    #       are crossed
-    #
-    # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.1
     # Extracting all the fitnesses of the population
     fits = [ind.fitness.values[0] for ind in pop]
     # Variable keeping track of the number of generations
@@ -90,9 +103,8 @@ def main(checkpoint=None):
     stats.register("std", np.std)
 
 
-    best = [0, pop[0]]
     # Begin the evolution
-    while gen <= 2000:
+    while gen <= MAXGENERATIONS:
         # A new generation
         gen = gen + 1
         # Select the next generation individuals
