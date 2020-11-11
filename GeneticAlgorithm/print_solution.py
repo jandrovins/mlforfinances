@@ -17,15 +17,16 @@ if len(argv) < 2:
     print("ERROR: Argument 'stock' not given. Exiting...")
     exit()
 
-pkl = argv[1]
 # pkl_cp = pkl.split("/")[-1].split("_")
 # stock_name = pkl_cp[0]
 # CXPB = pkl_cp[1].split("CXPB")[-1]
 # MUTPB = pkl_cp[2].split("MUTPB")[-1]
 # n = pkl_cp[3].split("n")[-1].split('.')[0]
 
+pkl = argv[1]
 stock_file = argv[2]
 trends_data = np.loadtxt(f"{stock_file}",delimiter=',', skiprows=1) 
+print_prefix = argv[3]
 
 def evaluation(individual):
     fitness = 0 
@@ -70,5 +71,7 @@ halloffame = cp["halloffame"]
 logbook = cp["logbook"]
 random.setstate(cp["rndstate"])
 
-fitness = evaluation(halloffame[0])
-print(f"Weights:{halloffame[0]} - FITNESS:{fitness}")
+fitness = evaluation(halloffame[0])[0]
+trends_data_len = float(len(trends_data))
+perc = fitness / trends_data_len
+print(f"{print_prefix} Weights:{halloffame[0]} - Fitness perc:{perc} - {fitness} of {trends_data_len} in PKL:{pkl}")

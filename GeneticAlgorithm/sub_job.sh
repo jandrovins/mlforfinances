@@ -18,8 +18,8 @@ for stock in $(ls datasets); do
     echo "In stock: $stock"
 
     ls $pkl &> /dev/null || ~/.conda/envs/SP/bin/python -m scoop --host $(hostname) -n 32 GA.py $CXPB $MUTPB $n $stock $MAXGENERATIONS $lwlimit $rwlimit $pkl
-    echo -n "RESULTS: "
-    echo -n "In ${stock}:: CXPB ${CXPB}:: MUTPB ${MUTPB}:: n ${n}:: MAXGENERATIONS ${MAXGENERATIONS}:: lwlimit ${lwlimit}:: rwlimit ${rwlimit}: " | tee -a all_results.txt
-    ~/.conda/envs/SP/bin/python print_solution.py $pkl $validation_csv | tee -a all_results.txt
+
+    print_prefix="RESULTS: In ${stock}:: CXPB ${CXPB}:: MUTPB ${MUTPB}:: n ${n}:: MAXGENERATIONS ${MAXGENERATIONS}:: lwlimit ${lwlimit}:: rwlimit ${rwlimit}: " 
+    ~/.conda/envs/SP/bin/python print_solution.py $pkl $validation_csv "$print_prefix" | tee -a /home/vaarcilal/StockPrices/all_results.txt
     echo 
 done
